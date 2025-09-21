@@ -1,11 +1,11 @@
 "use client"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import View from './components/view';
 import { useSendTransaction } from 'wagmi'
 import { parseEther, formatEther } from 'ethers/utils'
-import { useReadContract } from 'wagmi'
 import { abi } from './abi'
 import { useWriteContract } from 'wagmi'
+import Balance from './components/balance'
 export default function Wagmi() {
   const [index, setIndex] = useState(0);
   const changeIndex = (value: number) => {
@@ -35,6 +35,7 @@ export default function Wagmi() {
       sendTran(data._transaction);
     } else if (type === "balanceOf") {
       console.log("balanceOf");
+      setBalanceKey(new Date().getTime());
     } else if (type === "transfer") {
       console.log("transfer");
       transferFn()
@@ -70,20 +71,8 @@ export default function Wagmi() {
       console.error(error);
     }
   }
-
   // 查询合约
-  const [balance, setBalance] = useState<bigint | undefined>(BigInt(0))
-  const result = useReadContract({
-    abi,
-    address: '0x7f68f950AfCB47B976C2075f409F595AF8Dd82dD',
-    functionName: 'balanceOf',
-    args: ["0x2bcBa6Fce85C9781F29d05629cE6BB8858f21Bc2"]
-
-  })
-  useEffect(() => {
-    setBalance(result?.data)
-    console.log('useReadContract', result?.data);
-  }, [result?.data])
+  const [balanceKey, setBalanceKey] = useState(new Date().getTime());
 
   // 监听transfer
   const { writeContract } = useWriteContract();
@@ -140,9 +129,9 @@ export default function Wagmi() {
       <div className="m-10 flex flex-col justify-center items-center">
         <div className="mt-10">
           <button className="border border-black" onClick={() => changeAddress("balanceOf")}>balanceOf</button>
-          <div>
-            {formatEther(balance)} SepoliaETH
-          </div>
+        </div>
+        <div className="mt-10">
+          <Balance key={balanceKey}></Balance>
         </div>
       </div>
     }
