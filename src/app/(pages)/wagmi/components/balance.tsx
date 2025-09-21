@@ -11,7 +11,7 @@ function Balance() {
     args: ["0x2bcBa6Fce85C9781F29d05629cE6BB8858f21Bc2"]
 
   })
-  return <div>{formatEther(result.data || '0')}SepoliaETH</div>;
+  return <div>{formatEther(result.data as string ?? "0")}SepoliaETH</div>;
 }
 
 export default React.memo(Balance);

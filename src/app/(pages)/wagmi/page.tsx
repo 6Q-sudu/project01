@@ -41,22 +41,22 @@ export default function Wagmi() {
       transferFn()
     }
   }
-  function inputChange(event: Event, type: string) {
-    console.log(event);
-    if (type === "balance") {
-      const address = event.target?.value;
-      setData({
-        ...data,
-        _address: address
-      })
-    } else if (type === "transaction") {
-      const transaction = event.target?.value;
-      setData({
-        ...data,
-        _transaction: transaction
-      })
+  function inputChange(event: React.ChangeEvent<HTMLInputElement>, type: string) {
+      console.log(event);
+      if (type === "balance") {
+        const address = event.target.value;
+        setData({
+          ...data,
+          _address: address
+        })
+      } else if (type === "transaction") {
+        const transaction = event.target.value;
+        setData({
+          ...data,
+          _transaction: transaction
+        })
+      }
     }
-  }
   // 发起交易
   const { sendTransaction, sendTransactionAsync } = useSendTransaction();
   const sendTran = async (value: string) => {
