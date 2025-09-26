@@ -4,7 +4,7 @@ import View from './components/view';
 import { useSendTransaction } from 'wagmi'
 import { parseEther, formatEther } from 'ethers/utils'
 import { abi } from './abi'
-import { useWriteContract } from 'wagmi'
+import { useWriteContract, useWatchContractEvent } from 'wagmi'
 import Balance from './components/balance'
 export default function Wagmi() {
   const [index, setIndex] = useState(0);
@@ -12,7 +12,15 @@ export default function Wagmi() {
     if (value === index) return;
     setIndex(value);
   }
-
+   useWatchContractEvent({
+    address: '0x7f68f950AfCB47B976C2075f409F595AF8Dd82dD',
+    abi,
+    eventName: 'Transfer',
+    onLogs(logs) {
+      // Request timeout on the free tier, please upgrade your tier to the paid one
+      console.log('New logs!', logs)
+    },
+  })
   // 查询一个地址的余额
   const [data, setData] = useState({
     _address: "",
@@ -42,21 +50,21 @@ export default function Wagmi() {
     }
   }
   function inputChange(event: React.ChangeEvent<HTMLInputElement>, type: string) {
-      console.log(event);
-      if (type === "balance") {
-        const address = event.target.value;
-        setData({
-          ...data,
-          _address: address
-        })
-      } else if (type === "transaction") {
-        const transaction = event.target.value;
-        setData({
-          ...data,
-          _transaction: transaction
-        })
-      }
+    console.log(event);
+    if (type === "balance") {
+      const address = event.target.value;
+      setData({
+        ...data,
+        _address: address
+      })
+    } else if (type === "transaction") {
+      const transaction = event.target.value;
+      setData({
+        ...data,
+        _transaction: transaction
+      })
     }
+  }
   // 发起交易
   const { sendTransaction, sendTransactionAsync } = useSendTransaction();
   const sendTran = async (value: string) => {
@@ -81,8 +89,9 @@ export default function Wagmi() {
       const result = await writeContract({
         abi,
         address: "0x7f68f950AfCB47B976C2075f409F595AF8Dd82dD",
-        functionName: 'mint',
+        functionName: 'transfer',
         args: [
+          "0x2bcBa6Fce85C9781F29d05629cE6BB8858f21Bc2",
           parseEther('0.001')
         ]
       })
@@ -92,6 +101,9 @@ export default function Wagmi() {
       console.error("writeContract", error);
     }
   }
+  console.log(111);
+
+ 
 
   return <div >
     <div className="flex justify-center mt-4">
@@ -139,7 +151,7 @@ export default function Wagmi() {
       index === 3 &&
       <div className="m-10 flex flex-col justify-center items-center">
         <div className="mt-10">
-          <button className="border border-black" onClick={() => changeAddress("transfer")}>mint 0.001SepoliaETH</button>
+          <button className="border border-black" onClick={() => changeAddress("transfer")}>transfer 0.001SepoliaETH</button>
         </div>
       </div>
     }
